@@ -1,0 +1,45 @@
+.post {
+  margin: 2rem auto;
+  display: flex;
+  flex-direction: column;
+
+  text-align: left;
+  padding: 1em;
+  box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
+  border-radius: 0.5rem;
+}
+
+.userContainer {
+  display: flex;
+  align-items: center;
+
+  gap: 1rem;
+}
+
+.userContainer img {
+  width: 50px;
+  border-radius: 100%;
+}
+
+.userContainer .date {
+  margin-left: auto;
+}
+
+.postContent {
+  padding-left: 1em;
+}
+
+.actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.likes {
+  display: flex;
+  gap: 0.25rem;
+  align-items: center;
+}
+
+.likes svg {
+  fill: red;
+}

@@ -1,0 +1,27 @@
+.navbar {
+  background-color: #fff;
+  padding: 1em;
+}
+
+.navMenu {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  max-width: 50%;
+  margin: 0 auto;
+
+  display: flex;
+  justify-content: center;
+  gap: 2rem;
+}
+
+.navLink {
+  text-decoration: none;
+  text-transform: uppercase;
+  color: #000;
+}
+
+.navLink:hover,
+.navLink:focus {
+  color: #aaa;
+}
