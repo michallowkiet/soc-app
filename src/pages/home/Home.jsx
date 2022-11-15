@@ -5,10 +5,6 @@ import classes from "./Home.module.css";
 
 function Home() {
   const [posts, setPosts] = useState([]);
-  const [user, setUser] = useState(null);
-
-  axios.defaults.headers.common["Authorization"] =
-    "Bearer " + (user ? user.jwt_token : "");
 
   const getLatestPosts = async () => {
     const response = await axios.post(
@@ -26,7 +22,7 @@ function Home() {
 
   const getOlderThen = async () => {
     const [lastPost] = posts.slice(-1);
-    console.log(lastPost);
+
     const date = { date: lastPost.created_at };
 
     const response = await axios.post(

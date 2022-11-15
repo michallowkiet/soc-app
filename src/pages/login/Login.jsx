@@ -1,10 +1,12 @@
 import { useState } from "react";
 import classes from "./Login.module.css";
 import axios from "axios";
+import { useOutletContext } from "react-router-dom";
 
 function Login() {
   const [formData, setFormData] = useState({});
   const [loginMessage, setLoginMessage] = useState("");
+  const context = useOutletContext();
 
   const inputChangeHandler = (event) => {
     const target = event.target;
@@ -17,18 +19,21 @@ function Login() {
   };
 
   const login = async () => {
+    setLoginMessage("");
     const response = await axios.post(
       "http://akademia108.pl/api/social-app/user/login",
       formData
     );
-
+    console.log(response);
     const data = response.data;
 
     if (data.error) {
       setLoginMessage("Wrong username or password.");
+    } else {
+      window.localStorage.setItem("user", JSON.stringify(data));
+      context.getDataLocalStorage();
+      setLoginMessage("Login successful.");
     }
-
-    window.localStorage.setItem("user", JSON.stringify(data));
   };
 
   const formHandler = (event) => {
