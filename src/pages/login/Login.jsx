@@ -1,7 +1,7 @@
 import { useState } from "react";
 import classes from "./Login.module.css";
-import axios from "axios";
 import { useNavigate, useOutletContext } from "react-router-dom";
+import { logIn } from "../../utils/api";
 
 function Login() {
   const navigate = useNavigate();
@@ -21,12 +21,8 @@ function Login() {
 
   const login = async () => {
     setLoginMessage("");
-    const response = await axios.post(
-      "http://akademia108.pl/api/social-app/user/login",
-      formData
-    );
 
-    const data = response.data;
+    const data = await logIn(formData);
 
     if (data.error || data.password) {
       setLoginMessage("Wrong username or password.");

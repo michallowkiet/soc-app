@@ -1,153 +1,157 @@
 import { useState, useEffect } from "react";
-import axios from "axios";
+
 import Post from "../../components/post/Post";
 import classes from "./Home.module.css";
 import { useOutletContext } from "react-router-dom";
 import NewPost from "../../components/post/NewPost";
 import FollowRecommendation from "../../components/follow/FollowRecommendation";
+import {
+  getLatestPosts,
+  getOlderThen,
+  getNewerThen,
+  addNewPost,
+  deletePost,
+  getUsersRecommendation,
+  follow,
+  getAllFollows,
+  disFollow,
+} from "../../utils/api";
 
 function Home() {
-  const [recommendation, setRecommendation] = useState([]);
   const [posts, setPosts] = useState([]);
-  const [, setNewPosts] = useState(null);
+  const [recommendation, setRecommendation] = useState([]);
+  const [allFollows, setAllFollows] = useState([]);
 
-  const ctx = useOutletContext();
+  const { user } = useOutletContext();
   let errorMessage;
+  let recommendationEl;
 
-  const getLatestPosts = async () => {
-    const response = await axios.post(
-      "http://akademia108.pl/api/social-app/post/latest"
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Coś poszło nie tak.");
-    }
-
-    const data = response.data;
-
-    setPosts(data);
-  };
-
-  const getOlderThen = async () => {
-    const [lastPost] = posts.slice(-1);
-
-    const date = { date: lastPost.created_at };
-
-    const response = await axios.post(
-      "http://akademia108.pl/api/social-app/post/older-then",
-      { date }
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Coś poszło nie tak.");
-    }
-
-    const data = response.data;
+  const getOlderPosts = async () => {
+    const data = await getOlderThen(posts);
 
     setPosts(() => {
       return [...posts, ...data];
     });
   };
 
-  const getNewerThen = async () => {
-    const [firstPost] = posts.slice(1);
-
-    const date = { date: firstPost.created_at };
-
-    const response = await axios.post(
-      "http://akademia108.pl/api/social-app/post/newer-then",
-      { date }
-    );
-
-    if (response.status !== 200) {
-      throw new Error("Coś poszło nie tak.");
-    }
-
-    const data = await response.data;
+  const getNewerPosts = async () => {
+    const data = await getNewerThen(posts);
 
     setPosts(() => {
       return [data[0], ...posts];
     });
   };
 
-  const addNewPost = async (post) => {
-    try {
-      const response = await axios.post(
-        "https://akademia108.pl/api/social-app/post/add",
-        post
-      );
+  const addPost = async (post) => {
+    const data = await addNewPost(post);
 
-      const data = await response.data;
-      setNewPosts(data.post);
-      errorMessage = <p>{data.message}</p>;
-      getNewerThen();
-    } catch (error) {
-      errorMessage = <p>{error.response.data.message}</p>;
+    if (data?.error) {
+      errorMessage = <p>{data.error.message}</p>;
+      return;
     }
-  };
 
-  const deletePost = async (postId) => {
-    try {
-      await axios.post("https://akademia108.pl/api/social-app/post/delete", {
-        post_id: postId,
-      });
-
-      const filteredPosts = posts.filter((post) => post.id !== postId);
-      setPosts(filteredPosts);
-    } catch (error) {
-      errorMessage = <p>{error.response.data.message}</p>;
-    }
+    getNewerPosts();
   };
 
   const getRecommendations = async () => {
-    const response = await axios.post(
-      "https://akademia108.pl/api/social-app/follows/recommendations"
-    );
-
-    const data = await response.data;
-
-    setRecommendation((prevState) => {
-      return [...prevState, data];
-    });
+    const data = await getUsersRecommendation();
+    if (data.length > 0) {
+      setRecommendation(() => {
+        return [...data];
+      });
+    }
   };
 
-  const follow = async () => {};
+  const getAllFollowers = async () => {
+    const followers = await getAllFollows();
+    if (followers) {
+      setAllFollows(() => {
+        return [...followers];
+      });
+    }
+  };
+
+  const getPosts = async () => {
+    const postsData = await getLatestPosts();
+
+    setPosts(() => {
+      return [...postsData];
+    });
+    getRecommendations();
+    getAllFollowers();
+  };
+
+  const removePost = async (postId) => {
+    const data = await deletePost(postId);
+
+    if (data?.error) {
+      errorMessage = <p>{data.error.message}</p>;
+      return;
+    }
+
+    getPosts();
+  };
+
+  const followHandler = async (leader_id) => {
+    const data = await follow(leader_id);
+
+    if (data) {
+      return;
+    }
+
+    await getPosts();
+  };
+
+  const unFollowHandler = async (leader_id) => {
+    const data = await disFollow(leader_id);
+
+    if (data) {
+      return;
+    }
+
+    await getPosts();
+  };
 
   const loadMoreHandler = () => {
     try {
-      getOlderThen();
+      getOlderPosts();
     } catch (error) {
       errorMessage = <p>{error.message}</p>;
     }
   };
 
   const deletePostHandler = (postId) => {
-    deletePost(postId);
+    removePost(postId);
   };
 
   useEffect(() => {
-    try {
-      getLatestPosts();
-    } catch (error) {
-      console.log(error);
-    }
+    getPosts();
   }, []);
 
-  useEffect(() => {
-    getRecommendations();
-  }, [posts]);
+  if (recommendation.length > 0) {
+    recommendationEl = (
+      <FollowRecommendation
+        follow={followHandler}
+        recommendation={recommendation}
+      />
+    );
+  }
 
   return (
     <section className={classes.home}>
       <div className="container">
         {errorMessage}
-        {ctx.user && recommendation.length > 0 && (
-          <FollowRecommendation recommendation={recommendation} />
-        )}
-        {ctx.user && <NewPost onAddNewPost={addNewPost} />}
+        {recommendationEl}
+        {user && <NewPost onAddNewPost={addPost} />}
         {posts.map((post) => {
           return (
-            <Post key={post.id} post={post} deletePost={deletePostHandler} />
+            <Post
+              key={post.id}
+              post={post}
+              deletePost={deletePostHandler}
+              follows={allFollows}
+              unFollow={unFollowHandler}
+            />
           );
         })}
         <button onClick={loadMoreHandler}>Load more</button>

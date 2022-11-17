@@ -3,36 +3,33 @@ import FavoriteOutlinedIcon from "@mui/icons-material/FavoriteOutlined";
 import { useOutletContext } from "react-router-dom";
 import { useState } from "react";
 import DeletePostModal from "../../components/post/DeletePostModal";
-import axios from "axios";
+import { likeDislike } from "../../utils/api";
 
-function Post({ post, deletePost }) {
+function Post({ post, deletePost, follows, unFollow }) {
   const { user } = useOutletContext();
   const [deleteModalDisplay, setDeleteModalDisplay] = useState(false);
   const [likesCount, setLikesCount] = useState(post.likes.length);
 
-  const liked = post.likes.filter((like) => like.id === user.id);
+  const liked = user ? post.likes.filter((like) => like.id === user.id) : null;
   const [doesUserLiked, setDoesUserLiked] = useState(
-    liked.length ? true : false
+    liked?.length ? true : false
   );
 
   let errorMsg;
+  let deleteButton;
+  let unfollowButton;
 
   const showModal = () => {
-    setDeleteModalDisplay(!deleteModalDisplay);
+    setDeleteModalDisplay((prevState) => {
+      return !prevState;
+    });
     document.body.classList.toggle("open");
   };
 
   const likePost = async (id, isLiked) => {
-    try {
-      await axios.post(
-        `http://akademia108.pl/api/social-app/post/${
-          isLiked ? "dislike" : "like"
-        }`,
-        {
-          post_id: id,
-        }
-      );
-    } catch (error) {
+    const data = await likeDislike(isLiked, id);
+
+    if (data) {
       errorMsg = <p>Something went wrong</p>;
     }
   };
@@ -49,9 +46,20 @@ function Post({ post, deletePost }) {
     });
   };
 
-  let deleteButton;
+  const unFollowHandler = () => {
+    unFollow(post.user.id);
+  };
+
   if (user && user.id === post.user.id) {
     deleteButton = <button onClick={deleteHandler}>Delete post</button>;
+  }
+
+  const filteredFollows = follows.filter(
+    (follow) => follow.id === post.user.id
+  );
+
+  if (filteredFollows.length > 0) {
+    unfollowButton = <button onClick={unFollowHandler}>Unfollow</button>;
   }
 
   const { username, avatar_url: avatarUrl } = post.user;
@@ -73,6 +81,7 @@ function Post({ post, deletePost }) {
       </div>
       <p className={classes.postContent}>{post.content}</p>
       <div className={classes.actions}>
+        {unfollowButton}
         {deleteButton}
         <button onClick={likeHandler}>
           {doesUserLiked ? "Dislike" : "Like"}

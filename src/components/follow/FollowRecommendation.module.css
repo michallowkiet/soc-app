@@ -1,3 +1,8 @@
+h3 {
+  margin-top: 0;
+  margin-bottom: 2em;
+}
+
 .follow {
   margin: 2rem auto;
   display: flex;
@@ -7,4 +12,20 @@
   padding: 1em;
   box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.2);
   border-radius: 0.5rem;
+}
+
+.users {
+  display: flex;
+  justify-content: center;
+  gap: 4rem;
+}
+
+.user {
+  display: flex;
+  flex-direction: column;
+}
+
+.user img {
+  width: 100px;
+  border-radius: 100%;
 }
