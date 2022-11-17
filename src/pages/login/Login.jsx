@@ -1,12 +1,13 @@
 import { useState } from "react";
 import classes from "./Login.module.css";
 import axios from "axios";
-import { useOutletContext } from "react-router-dom";
+import { useNavigate, useOutletContext } from "react-router-dom";
 
 function Login() {
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({});
   const [loginMessage, setLoginMessage] = useState("");
-  const context = useOutletContext();
+  const { getUser } = useOutletContext();
 
   const inputChangeHandler = (event) => {
     const target = event.target;
@@ -24,15 +25,16 @@ function Login() {
       "http://akademia108.pl/api/social-app/user/login",
       formData
     );
-    console.log(response);
+
     const data = response.data;
 
-    if (data.error) {
+    if (data.error || data.password) {
       setLoginMessage("Wrong username or password.");
     } else {
       window.localStorage.setItem("user", JSON.stringify(data));
-      context.getDataLocalStorage();
+      getUser();
       setLoginMessage("Login successful.");
+      navigate("/", { replace: true });
     }
   };
 

@@ -42,3 +42,20 @@ img {
   border-radius: 0.5rem;
   padding: 2rem;
 }
+
+button {
+  background-color: #1d1ce5;
+  border-radius: 0.25rem;
+  border: none;
+  color: #fff;
+  padding: 0.5em 1em;
+  cursor: pointer;
+}
+
+button:hover {
+  background-color: #4649ff;
+}
+
+body.open {
+  overflow-y: hidden;
+}

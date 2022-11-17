@@ -31,6 +31,7 @@
 
 .actions {
   display: flex;
+  gap: 0.5rem;
   justify-content: flex-end;
 }
 
@@ -42,4 +43,18 @@
 
 .likes svg {
   fill: red;
+}
+
+.post form {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+}
+
+.post textarea {
+  height: 100px;
+}
+
+.post button {
+  align-self: flex-end;
 }
