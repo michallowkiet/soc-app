@@ -62,7 +62,9 @@ function Login() {
             onChange={inputChangeHandler}
           />
         </div>
-        <button type="submit">Login</button>
+        <button className={classes.btn} type="submit">
+          Login
+        </button>
       </form>
     </div>
   );

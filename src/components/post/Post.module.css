@@ -58,3 +58,7 @@
 .post button {
   align-self: flex-end;
 }
+
+.post form {
+  align-items: inherit;
+}

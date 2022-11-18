@@ -89,6 +89,19 @@ export const logIn = async (formData) => {
   }
 };
 
+export const signUp = async (formData) => {
+  try {
+    const response = await axios.post(
+      "http://akademia108.pl/api/social-app/user/signup",
+      formData
+    );
+
+    return response.data;
+  } catch (error) {
+    return error;
+  }
+};
+
 export const likeDislike = async (isLiked, id) => {
   try {
     await axios.post(

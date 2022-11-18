@@ -18,6 +18,7 @@ function Post({ post, deletePost, follows, unFollow }) {
   let errorMsg;
   let deleteButton;
   let unfollowButton;
+  let likeButton;
 
   const showModal = () => {
     setDeleteModalDisplay((prevState) => {
@@ -58,8 +59,16 @@ function Post({ post, deletePost, follows, unFollow }) {
     (follow) => follow.id === post.user.id
   );
 
-  if (filteredFollows.length > 0) {
+  if (filteredFollows.length > 0 && user) {
     unfollowButton = <button onClick={unFollowHandler}>Unfollow</button>;
+  }
+
+  if (user) {
+    likeButton = (
+      <button onClick={likeHandler}>
+        {doesUserLiked ? "Dislike" : "Like"}
+      </button>
+    );
   }
 
   const { username, avatar_url: avatarUrl } = post.user;
@@ -83,9 +92,7 @@ function Post({ post, deletePost, follows, unFollow }) {
       <div className={classes.actions}>
         {unfollowButton}
         {deleteButton}
-        <button onClick={likeHandler}>
-          {doesUserLiked ? "Dislike" : "Like"}
-        </button>
+        {likeButton}
         <div className={classes.likes}>
           <FavoriteOutlinedIcon />
           {likesCount}

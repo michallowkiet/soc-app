@@ -64,7 +64,7 @@ function Home() {
 
   const getAllFollowers = async () => {
     const followers = await getAllFollows();
-    if (followers) {
+    if (followers && followers.length > 0) {
       setAllFollows(() => {
         return [...followers];
       });
@@ -128,7 +128,7 @@ function Home() {
     getPosts();
   }, []);
 
-  if (recommendation.length > 0) {
+  if (recommendation.length > 0 && user) {
     recommendationEl = (
       <FollowRecommendation
         follow={followHandler}
