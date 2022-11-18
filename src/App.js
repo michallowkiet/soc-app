@@ -15,10 +15,9 @@ function App() {
 
   const logoutHandler = async () => {
     try {
-      await axios.post("http://akademia108.pl/api/social-app/user/logout");
-
-      setUser(null);
       localStorage.removeItem("user");
+      setUser(null);
+      await axios.post("http://akademia108.pl/api/social-app/user/logout");
     } catch (error) {
       console.log(error.response.data.message);
     }
