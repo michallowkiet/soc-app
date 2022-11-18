@@ -99,7 +99,7 @@ function Home() {
       return;
     }
 
-    await getPosts();
+    getPosts();
   };
 
   const unFollowHandler = async (leader_id) => {
@@ -109,7 +109,7 @@ function Home() {
       return;
     }
 
-    await getPosts();
+    getPosts();
   };
 
   const loadMoreHandler = () => {
